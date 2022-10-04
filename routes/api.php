@@ -1,8 +1,8 @@
 <?php
 
-use App\Http\Controllers\Api\AuthorController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\AuthorController;
+use App\Http\Controllers\Api\CommentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -21,4 +21,11 @@ Route::controller(AuthorController::class)->group(function() {
     Route::post('authors', 'store')->name('api.authors.store');
     Route::put('authors/{author}', 'update')->name('api.authors.update');
     Route::delete('authors/{author}', 'destroy')->name('api.authors.destroy');
+});
+
+Route::controller(CommentController::class)->group(function() {
+    Route::get('comments', 'index')->name('api.comments.index');
+    Route::post('comments', 'store')->name('api.comments.store');
+    Route::put('comments/{comment}', 'update')->name('api.comments.update');
+    Route::delete('comments/{comment}', 'destroy')->name('api.comments.destroy');
 });

@@ -20,6 +20,19 @@ class CommentController extends Controller
 
     public function store(CommentsRequest $request) : JsonResponse
     {
+        $parent = Comment::find($request->parent_id);
+        if ($parent) {
+            $parent = Comment::find($parent->parent_id);
+            if ($parent) {
+                $parent = Comment::find($parent->parent_id);
+                if ($parent) {
+                    return response()->json([
+                        'message' => 'Only can be three layers'
+                    ], 400);
+                }
+            }
+        }
+
         $comment = DB::table('comments')->insert($request->validated());
 
         return response()->json([
@@ -36,10 +49,24 @@ class CommentController extends Controller
         ]);
     }
 
-    public function destroy(Comment $comment)
+    public function destroy(Comment $comment) : JsonResponse
     {
         $comment->delete();
 
         return response()->json(null, 204);
     }
+
+    public function nested() : JsonResponse
+    {
+        $comments = DB::table('comments')
+            ->join('authors', 'comments.author_id', '=', 'authors.id')
+            ->select('comments.*', 'authors.name')
+            ->get();
+
+        $comments = Comment::parseNestedComments($comments);
+        $comments = Comment::removeAuthorIdAndParentId($comments);
+        
+        return response()->json($comments);
+    }
+
 }

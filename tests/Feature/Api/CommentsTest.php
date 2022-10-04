@@ -74,4 +74,20 @@ class CommentsTest extends TestCase
 
 		$response->assertNoContent(); 
 	}
+
+	/** @test */
+	public function comments_can_not_have_more_than_2_comments()
+	{
+		$author = Author::factory()->create();
+		$comment = Comment::factory()->for($author)->create();
+		$childComment = Comment::factory()->for($author)->create(['parent_id' => $comment->id]);
+		$grandChildComment = Comment::factory()->for($author)->create(['parent_id' => $childComment->id]);
+		$greatGrandChildComment = Comment::factory()->for($author)->create(['parent_id' => $childComment->id]);
+		$greatGreatGrandChildComment = Comment::factory()->for($author)->create(['parent_id' => $childComment->id]);
+		$greatGreatGreatGrandChildComment = Comment::factory()->for($author)->create(['parent_id' => $childComment->id]);
+
+		$response = $this->getJson(route($this->routePrefix.'nested'));
+
+		$response->assertStatus(400);
+	}
 }

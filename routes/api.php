@@ -28,4 +28,6 @@ Route::controller(CommentController::class)->group(function() {
     Route::post('comments', 'store')->name('api.comments.store');
     Route::put('comments/{comment}', 'update')->name('api.comments.update');
     Route::delete('comments/{comment}', 'destroy')->name('api.comments.destroy');
+
+    Route::get('nested', 'nested')->name('api.comments.nested');
 });

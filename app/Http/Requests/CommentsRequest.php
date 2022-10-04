@@ -25,6 +25,7 @@ class CommentsRequest extends FormRequest
     {
         return [
             'author_id' => 'required|integer|exists:authors,id',
+            'parent_id' => 'integer|exists:comments,id',
             'message' => 'required', 'max:255'  
         ];
     }

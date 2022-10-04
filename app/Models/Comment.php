@@ -53,4 +53,18 @@ class Comment extends Model
         }
         return $comments;
     }
+
+    public static function verifyNoMoreThanThreeLevels($comments, $level = 0)
+    {
+        foreach ($comments as $comment) {
+            if ($level > 2) {
+                return false;
+            }
+            if (count($comment->comments) > 0) {
+                $level++;
+                self::verifyNoMoreThanThreeLevels($comment->comments, $level);
+            }
+        }
+        return true;
+    }
 }

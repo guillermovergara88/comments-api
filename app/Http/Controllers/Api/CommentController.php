@@ -42,8 +42,14 @@ class CommentController extends Controller
 
     public function update(CommentsRequest $request, Comment $comment) : JsonResponse
     {
-        $comment->update($request->all());
+        $checkLevels = Comment::verifyNoMoreThanTwoLevels($comment);
+        if ($checkLevels) {
+            return response()->json([
+                'message' => 'Only can be three layers'
+            ], 400);
+        }
 
+        $comment->update($request->all());
         return response()->json([
             'data' => $comment
         ]);

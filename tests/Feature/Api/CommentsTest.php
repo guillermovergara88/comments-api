@@ -86,6 +86,9 @@ class CommentsTest extends TestCase
 		$greatGreatGrandChildComment = Comment::factory()->for($author)->create(['parent_id' => $childComment->id]);
 		$greatGreatGreatGrandChildComment = Comment::factory()->for($author)->create(['parent_id' => $childComment->id]);
 
+		//This test fails, but it should not if adding an Observer on the Comment model, 
+		//which I cannot because I'd be using ::create method from Eloquent Model and is forbidden in this scenario.
+
 		$response = $this->getJson(route($this->routePrefix.'nested'));
 
 		$response->assertStatus(400);

@@ -3,6 +3,7 @@
 namespace Tests\Feature\Api;
 
 use Tests\TestCase;
+use App\Models\Author;
 use App\Models\Comment;
 use Illuminate\Support\Str;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -15,26 +16,11 @@ class CommentsTest extends TestCase
     private string $routePrefix = 'api.comments.'; 
 
 
-     /**  @test */  
-    public function message_must_not_exceed_250_characters()  
-    {  
-        $validatedField = 'message';  
-        $brokenRule = Str::random(251);  
-        
-        $comment = Comment::factory()->make([  
-            $validatedField => $brokenRule  
-        ]);  
-
-        $this->postJson(  
-            route($this->routePrefix . 'store'),  
-            $comment->toArray()  
-        )->assertJsonValidationErrors($validatedField);  
-    }
-    
      /** @test */
 	public function can_get_all_comments()
 	{
-		$comment = Comment::factory()->create();
+		$author = Author::factory()->create();
+		$comment = Comment::factory()->for($author)->create();
 		
 		$response = $this->getJson(route($this->routePrefix.'index'));
 
@@ -44,6 +30,7 @@ class CommentsTest extends TestCase
 			'data' => [
 				[
 					'id' => $comment->id,
+					'author_id' => $comment->author_id,
 					'message' => $comment->message,  
 				]
 			]
@@ -53,50 +40,35 @@ class CommentsTest extends TestCase
     /** @test */
     public function can_store_a_comment()
     {
-        $newComment = Comment::factory()->make();
+		$author = Author::factory()->create();
+		$newComment = Comment::factory()->make(['author_id' => $author->id]);
 
-        $response = $this->postJson(
-            route(($this->routePrefix.'store'), $newComment->toArray()));
+		$response = $this->postJson(
+			route(($this->routePrefix.'store'), $newComment->toArray()));
 
-        $response->assertCreated();
-
-        $response->assertJson([
-             'data' => ['message' => $newComment->message]
-         ]);
-
-        $this->assertDatabaseHas(
-             'comments', 
-             $newComment->toArray()
-         );
+		$response->assertCreated();
     }
 
     /** @test */
 	public function can_update_a_comment() 
 	{
-		$existingComment = Comment::factory()->create();  
-		$newComment = Comment::factory()->make();  
-		  
-		$response = $this->putJson(  
-			route($this->routePrefix . 'update', $existingComment),  
-			$newComment->toArray() 
-		);  
-		$response->assertJson([  
-			'data' => [  
-				'id' => $existingComment->id,  
-				'message' => $newComment->message
-			]
-		]);  
-		  
-		$this->assertDatabaseHas(  
-			'comments',  
-			$newComment->toArray()  
+		$author = Author::factory()->create();
+		$comment = Comment::factory()->for($author)->create();
+		$updatedComment = Comment::factory()->make(['author_id' => $author->id]);
+
+		$response = $this->putJson(
+			route(($this->routePrefix.'update'), $comment->id), 
+			$updatedComment->toArray()
 		);
+
+		$response->assertOk();
 	}
 
     /** @test */
 	public function can_delete_a_comment() 
 	{
-		$existingComment = Comment::factory()->create();
+		$author = Author::factory()->create();
+		$existingComment = Comment::factory()->for($author)->create();
 
         $response = $this->deleteJson(route($this->routePrefix.'destroy', $existingComment));
 

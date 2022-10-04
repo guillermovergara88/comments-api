@@ -2,23 +2,25 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\JsonResponse;
-use App\Http\Requests\CommentsRequest;
 use App\Models\Comment;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
+use App\Http\Requests\CommentsRequest;
 
 class CommentController extends Controller
 {
     public function index()
 	{
+        $comments = DB::table('comments')->get();
         return response()->json([  
-		    'data' => Comment::all()  
+		    'data' => $comments 
 		]);
 	}
 
     public function store(CommentsRequest $request) : JsonResponse
     {
-        $comment = Comment::create($request->validated());
+        $comment = DB::table('comments')->insert($request->validated());
 
         return response()->json([
             'data' => $comment

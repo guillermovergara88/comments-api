@@ -3,6 +3,7 @@
 namespace Tests\Unit\Http\Requests;
 
 use Tests\TestCase;
+use App\Models\Author;
 use App\Models\Comment;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
@@ -17,18 +18,16 @@ class CommentsRequestTest extends TestCase
      * @test  
      * @throws \Throwable  
      */  
-    public function message_is_required()  
+    public function author_and_message_is_required()  
     {  
-
-        $validatedField = 'message';  
-        $brokenRule = null;  
-        
         $comment = Comment::factory()->make([  
-            $validatedField => $brokenRule  
+            'author_id' => null,  
+            'message' => null,  
         ]);  
+ 
         $this->postJson(  
             route($this->routePrefix . 'store'),  
             $comment->toArray()  
-        )->assertJsonValidationErrors($validatedField);  
+        )->assertJsonValidationErrors(['author_id', 'message']);  
     }
 }

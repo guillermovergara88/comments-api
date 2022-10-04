@@ -12,4 +12,9 @@ class Author extends Model
     public $timestamps = false;
     
     protected $fillable = ['name'];  
+
+    public function comments()
+    {
+        return $this->hasMany(Comment::class);
+    }
 }

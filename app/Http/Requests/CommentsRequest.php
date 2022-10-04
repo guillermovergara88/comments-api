@@ -23,8 +23,9 @@ class CommentsRequest extends FormRequest
      */
     public function rules()
     {
-        return [  
-            'message' => ['required', 'max:250']  
+        return [
+            'author_id' => 'required|integer|exists:authors,id',
+            'message' => 'required', 'max:255'  
         ];
     }
 }

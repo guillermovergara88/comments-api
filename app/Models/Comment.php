@@ -11,5 +11,10 @@ class Comment extends Model
 
     public $timestamps = false;
     
-    protected $fillable = ['message'];  
+    protected $fillable = ['message', 'author_id'];  
+
+    public function author()
+    {
+        return $this->belongsTo(Author::class, 'author_id');
+    }
 }

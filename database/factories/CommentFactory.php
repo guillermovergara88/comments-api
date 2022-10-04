@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Author;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -16,8 +17,9 @@ class CommentFactory extends Factory
      */
     public function definition()
     {
-        return [  
-            'message' => fake()->text()
+        return [
+            'message' => fake()->text(),
+            'author_id' => Author::factory()->create()->id
         ];
     }
 }
